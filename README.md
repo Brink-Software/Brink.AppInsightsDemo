@@ -1,5 +1,10 @@
 # Application Insights Demo
-Demonstration of several aspects of Application Insights.
+Demonstration of several aspects of Application Insights:
+
+- [Data Filtering](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/AppInsights/CustomTelemetryFilter.cs)
+- [Data Enrichment](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/AppInsights/CustomInitializer.cs)
+- Using [Custom Tracking](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/AppInsights/DurationTracker.cs)
+- [Configuration](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/Startup.cs)
 
 # Deploy
 
