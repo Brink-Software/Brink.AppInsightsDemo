@@ -6,6 +6,8 @@ Demonstration of several aspects of Application Insights:
 - Using [Custom Tracking](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/AppInsights/DurationTracker.cs)
 - [Configuration](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/Startup.cs)
 
+All the code comes together in the [ValuesController](https://github.com/Ibis-Software/AppInsightsDemo/blob/master/src/AppInsightDemo/Controllers/ValuesController.cs)
+
 # Deploy
 
 This ARM template will create a website with an Application Insights resource attached to it.
