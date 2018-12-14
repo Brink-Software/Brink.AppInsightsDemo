@@ -9,7 +9,7 @@ namespace NonWebIntegrationDemo
 
         public LiveStreamProvider(TelemetryConfiguration configuration)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
         }
 
         public void Enable()
