@@ -5,6 +5,9 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 namespace AppInsightDemo.AppInsights
 {
+    /// <summary>
+    /// A Telemetry filter lets you define whether a telemetry item is dropped or not
+    /// </summary>
     public class CustomTelemetryFilter : ITelemetryProcessor
     {
         private readonly ITelemetryProcessor _next;
@@ -16,7 +19,7 @@ namespace AppInsightDemo.AppInsights
 
         public void Process(ITelemetry item)
         { 
-            // Process all telemetry except fast requests
+            // Example: process all telemetry except fast requests
             if (!(item is RequestTelemetry request) || 
                 request.Duration >= TimeSpan.FromMilliseconds(50))
                 _next.Process(item); // Call next processor

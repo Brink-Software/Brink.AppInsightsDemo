@@ -25,6 +25,7 @@ namespace AppInsightDemo
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddApplicationInsightsTelemetry();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
@@ -40,8 +41,6 @@ namespace AppInsightDemo
                 app.UseDeveloperExceptionPage();
             }
 
-            loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Information);
-            
             app.UseMvc();
         }
     }
