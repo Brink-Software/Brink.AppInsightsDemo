@@ -1,6 +1,6 @@
-﻿using Microsoft.ApplicationInsights.Channel;
+﻿using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 
 namespace AppInsightDemo.AppInsights
@@ -11,16 +11,14 @@ namespace AppInsightDemo.AppInsights
     /// 
     /// You can have multiple of them
     /// </summary>
-    public class CustomInitializer : ITelemetryInitializer
+    public class CustomInitializer : TelemetryInitializerBase
     {
-        private readonly IHttpContextAccessor _contextAccessor;
-
-        public CustomInitializer(IHttpContextAccessor contextAccessor)
+        public CustomInitializer(IHttpContextAccessor contextAccessor) : base(contextAccessor)
         {
-            _contextAccessor = contextAccessor;
+        
         }
-
-        public void Initialize(ITelemetry telemetry)
+        
+        protected override void OnInitializeTelemetry(HttpContext platformContext, RequestTelemetry requestTelemetry, ITelemetry telemetry)
         {
             telemetry.Context.Device.Model = "Web Server";
 
@@ -29,7 +27,7 @@ namespace AppInsightDemo.AppInsights
                 return;
 
             supportedTelemetry.Properties["IsPrivilegedCall"] =
-                _contextAccessor.HttpContext.User.IsInRole("Admin").ToString();
+                platformContext.User.IsInRole("Admin").ToString();
         }
     }
 }

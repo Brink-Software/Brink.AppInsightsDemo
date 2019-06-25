@@ -25,8 +25,9 @@ namespace AppInsightDemo
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddHttpContextAccessor();
+
             services.AddApplicationInsightsTelemetry();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
             services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));

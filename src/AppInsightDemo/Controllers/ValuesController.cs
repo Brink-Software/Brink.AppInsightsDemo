@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AppInsightDemo.AppInsights;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,10 +13,12 @@ namespace AppInsightDemo.Controllers
     public class ValuesController : ControllerBase
     {
         private readonly ILogger<ValuesController> _logger;
+        private readonly TelemetryClient _telemetryClient;
 
-        public ValuesController(ILogger<ValuesController> logger)
+        public ValuesController(ILogger<ValuesController> logger, TelemetryClient telemetryClient)
         {
             _logger = logger;
+            _telemetryClient = telemetryClient;
         }
 
         // GET api/values
@@ -24,6 +27,9 @@ namespace AppInsightDemo.Controllers
         {
             // Trace some text to AppInsights. Template values are put in telemetry properties
             _logger.LogInformation("My logentry with some custom properties like {string}, {bool} and {guid}", "some string", true, Guid.NewGuid());
+
+            _telemetryClient.TrackEvent("My custom event");
+            _telemetryClient.TrackTrace("My custom trace");
 
             // Track the performance of some code rum somewhere during the request
             // using AppInsights.
