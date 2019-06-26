@@ -25,7 +25,7 @@ namespace AppInsightDemo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> Get()
         {
-            // Trace some text to AppInsights. Template values are put in telemetry properties
+            // Trace some text to AppInsights. Template values are put in telemetry properties. Basically same as  _telemetryClient.TrackTrace()
             _logger.LogInformation("My logentry with some custom properties like {string}, {bool} and {guid}", "some string", true, Guid.NewGuid());
 
             _telemetryClient.TrackEvent("My custom event");
@@ -45,6 +45,10 @@ namespace AppInsightDemo.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
+            // A logged exception will be routed to App Insights as well, basically like _telemetryClient.TrackException()
+            _logger.LogWarning(new Exception("An exception with severity Warning"), "An error occured");
+
+            // Unhandled exceptions will be automatically tracked by App Insights
             throw new Exception("Something went deliberately wrong.");
         }
     }
