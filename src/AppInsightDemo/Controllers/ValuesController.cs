@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AppInsightDemo.AppInsights;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +26,9 @@ namespace AppInsightDemo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> Get()
         {
+            var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
+            requestTelemetry.Properties.Add("key", "set from inside controller");
+
             // Trace some text to AppInsights. Template values are put in telemetry properties. Basically same as  _telemetryClient.TrackTrace()
             _logger.LogInformation("My logentry with some custom properties like {string}, {bool} and {guid}", "some string", true, Guid.NewGuid());
 
