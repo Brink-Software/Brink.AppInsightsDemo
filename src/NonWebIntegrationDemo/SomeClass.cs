@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
+using NonWebIntegrationDemo.AOP;
 
 namespace NonWebIntegrationDemo
 {
@@ -13,27 +14,24 @@ namespace NonWebIntegrationDemo
             _telemetryClient = telemetryClient;
         }
 
-        public string SayHello(string to)
+        [AppInsightsAdvice]
+        public async Task<string> SayHello(string to)
         {
             string response = null;
-
-            var operationName = $"{nameof(NonWebIntegrationDemo)}.{nameof(SomeClass)}.{nameof(SayHello)}";
-            using (_telemetryClient.StartOperation<RequestTelemetry>(operationName))
+            
+            try
             {
-                try
-                {
-                    var greeting = $"Hello {to}";
-                    _telemetryClient.TrackTrace($"Sending {greeting}");
+                var greeting = $"Hello {to}";
+                _telemetryClient.TrackTrace($"Sending {greeting}");
 
-                    response = new SomeService(_telemetryClient).Send(greeting);
-                }
-                catch (Exception exception)
-                {
-                    _telemetryClient.TrackException(exception);
-                }
-
-                return response;
+                response = await new SomeService(_telemetryClient).SendAsync(greeting);
             }
+            catch (Exception exception)
+            {
+                _telemetryClient.TrackException(exception);
+            }
+
+            return response;
         }
     }
 }

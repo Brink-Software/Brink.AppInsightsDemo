@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -9,7 +10,7 @@ namespace NonWebIntegrationDemo
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var configuration = new TelemetryConfiguration
             {
@@ -26,7 +27,7 @@ namespace NonWebIntegrationDemo
             var pageView = new PageViewTelemetry(nameof(Main));
             var sw = Stopwatch.StartNew();
 
-            var greeting = new SomeClass(telemetryClient).SayHello("World!");
+            var greeting = await new SomeClass(telemetryClient).SayHello("World!");
             Console.WriteLine(greeting);
 
             pageView.Duration = sw.Elapsed;

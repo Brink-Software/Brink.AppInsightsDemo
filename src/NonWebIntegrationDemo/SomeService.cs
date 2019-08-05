@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
+using NonWebIntegrationDemo.AOP;
 
 namespace NonWebIntegrationDemo
 {
@@ -13,21 +14,11 @@ namespace NonWebIntegrationDemo
             _telemetryClient = telemetryClient;
         }
 
-        public string Send(string greeting)
+        [AppInsightsAdvice]
+        public async Task<string> SendAsync(string greeting)
         {
-            var operationName = $"{nameof(NonWebIntegrationDemo)}.{nameof(SomeService)}.{nameof(Send)}";
-            using (var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName))
-            {
-                try
-                {
-                    throw new Exception("Woopsie");
-                }
-                catch
-                {
-                    operation.Telemetry.Success = false;
-                    throw;
-                }
-            }
+            await Task.Delay(500);
+            throw new Exception("Woopsie");
         }
     }
 }
