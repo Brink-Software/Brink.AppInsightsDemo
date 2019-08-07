@@ -74,6 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AOP\AppInsightsAdviceAttribute.cs" />
+    <Compile Include="AOP\ApplicationInsightsLogger.cs" />
+    <Compile Include="AOP\IApplicationInsightsLogger.cs" />
     <Compile Include="LiveStreamProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -12,7 +12,12 @@ namespace NonWebIntegrationDemo.AOP
 {
     public sealed class AppInsightsAdviceAttribute : Attribute, IMethodAsyncAdvice
     {
-        private static readonly TelemetryClient TelemetryClient = new TelemetryClient();
+        private static readonly TelemetryClient TelemetryClient = new TelemetryClient(ApplicationInsightsLogger.DefaultConfiguration);
+
+        public AppInsightsAdviceAttribute()
+        {
+            TelemetryClient.InstrumentationKey = Properties.Settings.Default.AppInsightsKey;
+        }
 
         public async Task Advise(MethodAsyncAdviceContext context)
         {
@@ -39,7 +44,7 @@ namespace NonWebIntegrationDemo.AOP
             }
         }
 
-        private void EnrichRequestTelemetry(ISupportProperties telemetry, MethodAsyncAdviceContext context, IReadOnlyList<ParameterInfo> parameters)
+        private static void EnrichRequestTelemetry(ISupportProperties telemetry, MethodAsyncAdviceContext context, IReadOnlyList<ParameterInfo> parameters)
         {
             telemetry.Properties.Add(
                 new KeyValuePair<string, string>("Accessibility", 

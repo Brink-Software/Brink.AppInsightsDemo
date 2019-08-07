@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
+using NonWebIntegrationDemo.AOP;
 using NonWebIntegrationDemo.Properties;
 
 namespace NonWebIntegrationDemo
@@ -12,31 +12,34 @@ namespace NonWebIntegrationDemo
     {
         static async Task Main(string[] args)
         {
-            var configuration = new TelemetryConfiguration
+            new LiveStreamProvider(ApplicationInsightsLogger.DefaultConfiguration).Enable();
+
+            var telemetryClient = new TelemetryClient(ApplicationInsightsLogger.DefaultConfiguration)
             {
                 InstrumentationKey = Settings.Default.AppInsightsKey
             };
 
-            var telemetryClient = new TelemetryClient
+            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
+
+            while (keyInfo.Key != ConsoleKey.Q)
             {
-                InstrumentationKey = Settings.Default.AppInsightsKey // Put your instrumentation key here
-            };
+                var pageView = new PageViewTelemetry(nameof(Main));
+                var sw = Stopwatch.StartNew();
 
-            new LiveStreamProvider(configuration).Enable();
+                var greeting = await new SomeClass().SayHello("World!");
+                Console.WriteLine(greeting);
 
-            var pageView = new PageViewTelemetry(nameof(Main));
-            var sw = Stopwatch.StartNew();
+                var story = new SomeClass().SaySomething("Booh!");
+                Console.WriteLine(story);
 
-            var greeting = await new SomeClass(telemetryClient).SayHello("World!");
-            Console.WriteLine(greeting);
+                pageView.Duration = sw.Elapsed;
+                telemetryClient.TrackPageView(pageView);
 
-            pageView.Duration = sw.Elapsed;
-            telemetryClient.TrackPageView(pageView);
+                telemetryClient.Flush();
 
-            telemetryClient.Flush();
-
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
+                Console.WriteLine("Press any key to restart or Q to quit.");
+                keyInfo = Console.ReadKey();
+            }
         }
     }
 }

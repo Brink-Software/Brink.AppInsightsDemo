@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
+﻿using Microsoft.ApplicationInsights.DependencyCollector;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
 
 namespace NonWebIntegrationDemo
@@ -15,6 +16,9 @@ namespace NonWebIntegrationDemo
         public void Enable()
         {
             QuickPulseTelemetryProcessor processor = null;
+
+            var module = new DependencyTrackingTelemetryModule();
+            module.Initialize(_configuration);
 
             _configuration.TelemetryProcessorChainBuilder
                 .Use(next =>

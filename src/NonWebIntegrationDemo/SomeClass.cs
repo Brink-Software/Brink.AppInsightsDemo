@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using NonWebIntegrationDemo.AOP;
 
 namespace NonWebIntegrationDemo
 {
     public class SomeClass
     {
-        private readonly TelemetryClient _telemetryClient;
-
-        public SomeClass(TelemetryClient telemetryClient)
-        {
-            _telemetryClient = telemetryClient;
-        }
-
         [AppInsightsAdvice]
         public async Task<string> SayHello(string to)
         {
@@ -22,16 +14,22 @@ namespace NonWebIntegrationDemo
             try
             {
                 var greeting = $"Hello {to}";
-                _telemetryClient.TrackTrace($"Sending {greeting}");
+                ApplicationInsightsLogger.Instance.TrackTrace($"Sending {greeting}");
 
-                response = await new SomeService(_telemetryClient).SendAsync(greeting);
+                response = await new SomeService().SendAsync(greeting);
             }
             catch (Exception exception)
             {
-                _telemetryClient.TrackException(exception);
+                ApplicationInsightsLogger.Instance.TrackException(exception);
             }
 
             return response;
+        }
+
+        [AppInsightsAdvice]
+        public string SaySomething(string text)
+        {
+            return $"I said '{text}'";
         }
     }
 }
