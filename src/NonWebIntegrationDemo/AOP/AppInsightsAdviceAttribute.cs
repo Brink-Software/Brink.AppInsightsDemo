@@ -7,17 +7,13 @@ using ArxOne.MrAdvice.Advice;
 using ArxOne.MrAdvice.Utility;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace NonWebIntegrationDemo.AOP
 {
     public sealed class AppInsightsAdviceAttribute : Attribute, IMethodAsyncAdvice
     {
-        private static readonly TelemetryClient TelemetryClient = new TelemetryClient(ApplicationInsightsLogger.DefaultConfiguration);
-
-        public AppInsightsAdviceAttribute()
-        {
-            TelemetryClient.InstrumentationKey = Properties.Settings.Default.AppInsightsKey;
-        }
+        private static readonly TelemetryClient TelemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
 
         public async Task Advise(MethodAsyncAdviceContext context)
         {

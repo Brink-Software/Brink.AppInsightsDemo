@@ -7,10 +7,12 @@ namespace NonWebIntegrationDemo
     public class SomeService
     {
         [AppInsightsAdvice]
-        public async Task<string> SendAsync(string greeting)
+        public static async Task<string> SendAsync(string greeting)
         {
             await Task.Delay(500);
             throw new Exception("Woopsie");
+
+            return greeting;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using NonWebIntegrationDemo.AOP;
 
 namespace NonWebIntegrationDemo
@@ -9,27 +11,22 @@ namespace NonWebIntegrationDemo
         [AppInsightsAdvice]
         public async Task<string> SayHello(string to)
         {
+            var telemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
             string response = null;
             
             try
             {
                 var greeting = $"Hello {to}";
-                ApplicationInsightsLogger.Instance.TrackTrace($"Sending {greeting}");
+                telemetryClient.TrackTrace($"Sending {greeting}");
 
-                response = await new SomeService().SendAsync(greeting);
+                response = await SomeService.SendAsync(greeting);
             }
             catch (Exception exception)
             {
-                ApplicationInsightsLogger.Instance.TrackException(exception);
+                telemetryClient.TrackException(exception);
             }
 
             return response;
-        }
-
-        [AppInsightsAdvice]
-        public string SaySomething(string text)
-        {
-            return $"I said '{text}'";
         }
     }
 }
