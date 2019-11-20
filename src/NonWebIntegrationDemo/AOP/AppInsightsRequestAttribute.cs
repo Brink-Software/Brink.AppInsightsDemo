@@ -11,7 +11,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 namespace NonWebIntegrationDemo.AOP
 {
-    public sealed class AppInsightsAdviceAttribute : Attribute, IMethodAsyncAdvice
+    public sealed class AppInsightsRequestAttribute : Attribute, IMethodAsyncAdvice
     {
         private static readonly TelemetryClient TelemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
 
@@ -36,7 +36,7 @@ namespace NonWebIntegrationDemo.AOP
                 finally
                 {
                     EnrichRequestTelemetry(operation.Telemetry, context, parameters);
-                }
+               }
             }
         }
 

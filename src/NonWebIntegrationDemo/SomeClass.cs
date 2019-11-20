@@ -8,7 +8,7 @@ namespace NonWebIntegrationDemo
 {
     public class SomeClass
     {
-        [AppInsightsAdvice]
+        [AppInsightsRequest]
         public async Task<string> SayHello(string to)
         {
             var telemetryClient = new TelemetryClient(TelemetryConfiguration.Active);

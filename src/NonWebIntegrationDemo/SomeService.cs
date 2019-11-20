@@ -6,7 +6,7 @@ namespace NonWebIntegrationDemo
 {
     public class SomeService
     {
-        [AppInsightsAdvice]
+        [AppInsightsDependency]
         public static async Task<string> SendAsync(string greeting)
         {
             await Task.Delay(500);
