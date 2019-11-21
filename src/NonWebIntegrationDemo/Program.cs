@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NonWebIntegrationDemo.AOP;
 
 /* To weave AppInsightsRequest advices on all methods for all types in 
-   this assembly uncomment the next line: */
+   this assembly uncomment the next lines: */
+//using NonWebIntegrationDemo.AOP;
+//
 //[assembly: AppInsightsRequest]
 
 namespace NonWebIntegrationDemo
