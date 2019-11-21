@@ -15,6 +15,8 @@ namespace NonWebIntegrationDemo.AOP
     {
         private static readonly TelemetryClient TelemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
 
+        public string Type { get; set; } = "Other";
+
         public async Task Advise(MethodAsyncAdviceContext context)
         {
             var parameters = context.TargetMethod.GetParameters();
@@ -35,6 +37,7 @@ namespace NonWebIntegrationDemo.AOP
                 }
                 finally
                 {
+                    operation.Telemetry.Type = Type;
                     EnrichRequestTelemetry(operation.Telemetry, context, parameters);
                 }
             }
