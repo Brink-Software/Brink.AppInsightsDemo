@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AppInsightDemo.AppInsights;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ namespace AppInsightDemo.Controllers
 
             // Track the performance of some code rum somewhere during the request
             // using AppInsights.
-            using (new DurationTracker($"Duration.{nameof(ValuesController)}.{nameof(Get)}.GetData"))
+            using (_telemetryClient.StartOperation<DependencyTelemetry>($"Duration.{nameof(ValuesController)}.{nameof(Get)}.GetData"))
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(60));
             }
