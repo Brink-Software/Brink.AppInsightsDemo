@@ -6,7 +6,7 @@ namespace NonWebIntegrationDemo
 {
     public class SomeService
     {
-        [AppInsightsDependency(Type = "InteralServiceCall"])
+        [AppInsightsDependency(Type = "InternalServiceCall")]
         public static async Task<string> SendAsync(string greeting)
         {
             await Task.Delay(500);
