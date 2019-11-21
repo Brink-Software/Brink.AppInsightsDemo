@@ -22,7 +22,7 @@ namespace NonWebIntegrationDemo.AOP
             var parameters = context.TargetMethod.GetParameters();
             var parameterDescription = string.Join(", ",
                 parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
-            var signature = $"{context.Target}.{context.TargetName}({parameterDescription})";
+            var signature = $"{context.Target ?? context.TargetType}.{context.TargetName}({parameterDescription})";
 
             using (var operation = TelemetryClient.StartOperation<DependencyTelemetry>(signature))
             {

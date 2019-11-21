@@ -4,9 +4,9 @@ using NonWebIntegrationDemo.AOP;
 
 namespace NonWebIntegrationDemo
 {
+    [AppInsightsDependency(Type = "InternalServiceCall")]
     public class SomeService
     {
-        [AppInsightsDependency(Type = "InternalServiceCall")]
         public static async Task<string> SendAsync(string greeting)
         {
             await Task.Delay(500);
