@@ -1,4 +1,6 @@
-﻿using AppInsightDemo.AppInsights;
+﻿using System;
+using System.Threading;
+using AppInsightDemo.AppInsights;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.SnapshotCollector;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace AppInsightDemo
 {
@@ -40,7 +41,12 @@ namespace AppInsightDemo
         {
             hostApplicationLifetime.ApplicationStarted.Register(() => { telemetryClient.TrackEvent("App Started"); });
             hostApplicationLifetime.ApplicationStopping.Register(() => { telemetryClient.TrackEvent("App Stopping"); });
-            hostApplicationLifetime.ApplicationStopped.Register(() => { telemetryClient.TrackEvent("App Stopped"); });
+            hostApplicationLifetime.ApplicationStopped.Register(() => {
+                telemetryClient.TrackEvent("App Stopped");
+                telemetryClient.Flush();
+
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+            });
 
             if (env.IsDevelopment())
             {
