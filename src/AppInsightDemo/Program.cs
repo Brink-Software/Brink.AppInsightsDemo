@@ -17,10 +17,10 @@ namespace AppInsightDemo
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 
-                    // Add a filter so logging that is piped to application insights is filtered to only log entries with severity
+                    // Uncomment the code below to add a filter so logging is filtered to only log entries with severity
                     // Information or higher. This can be done using a config file as well but this way it allows future modifications to
                     // change the log level at runtime. 
-                    logging.AddFilter(level => level >= LogLevel.Information); 
+                    //logging.AddFilter(level => level >= LogLevel.Information); 
                 })
                 .UseStartup<Startup>();
     }
