@@ -5,12 +5,12 @@ using NonWebIntegrationDemo.AOP;
 namespace NonWebIntegrationDemo
 {
     [AppInsightsDependency(Type = "InternalServiceCall")]
-    public class SomeService
+    public static class SomeService
     {
         public static async Task<string> SendAsync(string greeting)
         {
             await Task.Delay(500);
-            throw new Exception("Woopsie");
+            throw new InvalidOperationException("Woopsie");
 
             return greeting;
         }
