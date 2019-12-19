@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -9,10 +11,17 @@ using Microsoft.Extensions.Logging;
 
 namespace FunctionApp
 {
-    public static class HttpTriggered
+    public class HttpTriggered
     {
+        private readonly TelemetryClient _telemetryClient;
+
+        public HttpTriggered(TelemetryConfiguration telemetryConfiguration)
+        {
+            _telemetryClient = new TelemetryClient(telemetryConfiguration);
+        }
+        
         [FunctionName("HttpTriggered")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -24,6 +33,8 @@ namespace FunctionApp
             telemetry.Properties.Add("ContentLength", req.ContentLength.GetValueOrDefault().ToString());
 
             log.LogInformation("C# HTTP trigger function processed a request.");
+
+            _telemetryClient.TrackEvent("Function invocated");
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 

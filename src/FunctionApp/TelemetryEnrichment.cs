@@ -18,9 +18,9 @@ namespace FunctionApp
             if (!(telemetry is ISupportProperties item)) return;
 
             // Demonstrate use of dynamic properties
-            foreach (var (key, state) in States)
+            foreach (var state in States)
             {
-                item.Properties[key] = state.Value?.ToString() ?? string.Empty;
+                item.Properties[state.Key] = state.Value.Value?.ToString() ?? string.Empty;
             }
 
             // Demonstrate static property
