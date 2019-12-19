@@ -11,6 +11,10 @@ namespace FunctionApp
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddSingleton<ITelemetryInitializer, TelemetryEnrichment>();
+            builder.Services.Configure<TelemetryConfiguration>(
+                config => {
+                    config.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+                });
             builder.Services.AddLogging();
         }
     }
