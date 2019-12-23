@@ -29,6 +29,7 @@ namespace AppInsightDemo
 
             services.AddHttpContextAccessor();
 
+            services.AddHttpClient();
             services.AddApplicationInsightsTelemetry();
             services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
