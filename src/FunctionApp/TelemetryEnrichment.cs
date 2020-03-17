@@ -15,6 +15,8 @@ namespace FunctionApp
 
         public void Initialize(ITelemetry telemetry)
         {
+            telemetry.Context.Cloud.RoleName = nameof(HttpTriggered);
+
             if (!(telemetry is ISupportProperties item)) return;
 
             // Demonstrate use of dynamic properties
