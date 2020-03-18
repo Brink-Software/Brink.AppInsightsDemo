@@ -20,6 +20,8 @@ namespace WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _telemetryClient.TrackEvent("Execution started.");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
