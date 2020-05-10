@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using AppInsightDemo.AppInsights;
+﻿using AppInsightDemo.AppInsights;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.SnapshotCollector;
@@ -10,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading;
 
 namespace AppInsightDemo
 {
