@@ -23,7 +23,8 @@ namespace FunctionApp
         [FunctionName("HttpTriggered")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log,
+            ExecutionContext executionContext)
         {
             TelemetryEnrichment.SetData("content", await req.ReadAsStringAsync());
             TelemetryEnrichment.SetData("method", req.Method);
@@ -32,7 +33,7 @@ namespace FunctionApp
             var telemetry = req.HttpContext.Features.Get<RequestTelemetry>();
             telemetry.Properties.Add("ContentLength", req.ContentLength.GetValueOrDefault().ToString());
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function {FunctionName} processed a request.", executionContext.FunctionName);
 
             _telemetryClient.TrackEvent("Function invocated");
 
