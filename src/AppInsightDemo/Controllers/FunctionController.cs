@@ -14,6 +14,12 @@ namespace AppInsightDemo.Controllers
         private readonly ILogger<ValuesController> _logger;
         private readonly TelemetryClient _telemetryClient;
 
+        /// <summary>
+        /// TelemetryClient is injected using DI
+        /// </summary>
+        /// <param name="clientFactory"></param>
+        /// <param name="logger"></param>
+        /// <param name="telemetryClient"></param>
         public FunctionController(IHttpClientFactory clientFactory, ILogger<ValuesController> logger, TelemetryClient telemetryClient)
         {
             _clientFactory = clientFactory;

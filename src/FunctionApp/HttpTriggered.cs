@@ -48,6 +48,7 @@ namespace FunctionApp
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
+            // Observe exception telemetry in Application Insights
             throw new InvalidOperationException("Simulated exception");
 
             return new OkObjectResult("Hello World");

@@ -25,6 +25,7 @@ namespace AppInsightDemo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> Get()
         {
+            // Add custom properties to request telemetry by accessing the telemetry using Features
             var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
             requestTelemetry.Properties.Add("key", "set from inside controller");
 
@@ -34,8 +35,7 @@ namespace AppInsightDemo.Controllers
             _telemetryClient.TrackEvent("My custom event");
             _telemetryClient.TrackTrace("My custom trace");
 
-            // Track the performance of some code rum somewhere during the request
-            // using AppInsights.
+            // Track the performance of some code rum somewhere during the request using AppInsights. Outputted as DependencyTelemetry
             using (_telemetryClient.StartOperation<DependencyTelemetry>($"Duration.{nameof(ValuesController)}.{nameof(Get)}.GetData"))
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(60));

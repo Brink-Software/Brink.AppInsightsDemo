@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 
@@ -16,6 +12,13 @@ namespace AppInsightDemo.Middleware
         {
             _next = next;
         }
+
+        /// <summary>
+        /// Demonstrate how TelemetryClient is injected using DI 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="telemetryClient"></param>
+        /// <returns></returns>
 
         public async Task InvokeAsync(HttpContext context, TelemetryClient telemetryClient)
         {
