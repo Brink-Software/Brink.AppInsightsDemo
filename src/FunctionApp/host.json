@@ -5,7 +5,7 @@
       "Default": "Warning",
       "Host.Results": "Information",
       "Host.Aggregator": "Information",
-      "Function.HttpTriggered": "Information"
+      "Function.HttpTriggered.User": "Information"
     },
     "applicationInsights": {
       "samplingSettings": {
