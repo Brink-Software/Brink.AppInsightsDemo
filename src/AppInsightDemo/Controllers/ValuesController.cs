@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Mvc;
@@ -21,38 +20,64 @@ namespace AppInsightDemo.Controllers
             _telemetryClient = telemetryClient;
         }
 
-        // GET api/values
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> Get()
+        /// <summary>
+        /// Adds additional properties to a Request Telemetry using HttpContext.Features 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/api/demo1")]
+        public ActionResult<IEnumerable<string>> HttpContextFeaturesDemo()
         {
-            // Add custom properties to request telemetry by accessing the telemetry using Features
             var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
-            requestTelemetry.Properties.Add("key", "set from inside controller");
+            requestTelemetry.Properties.Add("aProperty1", "setUsingFeature");
 
-            // Trace some text to AppInsights. Template values are put in telemetry properties. Basically same as  _telemetryClient.TrackTrace()
-            _logger.LogInformation("My logentry with some custom properties like {string}, {bool} and {guid}", "some string", true, Guid.NewGuid());
+            _telemetryClient.TrackEvent("NoProperty1");
 
-            _telemetryClient.TrackEvent("My custom event");
-            _telemetryClient.TrackTrace("My custom trace");
-
-            // Track the performance of some code rum somewhere during the request using AppInsights. Outputted as DependencyTelemetry
-            using (_telemetryClient.StartOperation<DependencyTelemetry>($"Duration.{nameof(ValuesController)}.{nameof(Get)}.GetData"))
+            using (_telemetryClient.StartOperation<DependencyTelemetry>("aSubOperationOfHttpContextFeaturesDemo"))
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(60));
+                // This dependency telemetry item won't have the custom property
             }
 
             return new[] { "value1", "value2" };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        /// <summary>
+        /// Adds additional properties to a telemetry of same operation using Activity
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/api/demo2")]
+        public ActionResult<IEnumerable<string>> ActivityDemo()
         {
-            // A logged exception will be routed to App Insights as well, basically like _telemetryClient.TrackException()
-            _logger.LogWarning(new Exception("An exception with severity Warning"), "An error occured");
+            Activity.Current.AddBaggage("aProperty2", "setUsingActivityBaggage");   // Add aProperty3 to sub operations of the request telemetry item only
 
-            // Unhandled exceptions will be automatically tracked by App Insights
-            throw new Exception("Something went deliberately wrong.");
+            _telemetryClient.TrackEvent("WithProperty2");
+
+            using (_telemetryClient.StartOperation<DependencyTelemetry>("aSubOperationOfActivityDemo"))
+            {
+                // This dependency telemetry will have only the properties set using Activity.Current.AddBaggage(..)
+
+                // This event telemetry will have only the properties set using Activity.Current.AddBaggage(..)
+                _telemetryClient.TrackEvent("WithProperty2InsideSubOp");
+            }
+
+            return new[] { "value1", "value2" };
+        }
+
+        /// <summary>
+        /// Adds additional properties to a trace telemetry using log scopes
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/api/demo3")]
+        public ActionResult<IEnumerable<string>> BeginScopeDemo()
+        {
+            using (_logger.BeginScope(new Dictionary<string, object>
+            {
+                {"aProperty3", "setUsingScope"}
+            }))
+            {
+                _logger.LogWarning("Some Warning");
+            }
+
+            return new[] { "value1", "value2" };
         }
     }
 }

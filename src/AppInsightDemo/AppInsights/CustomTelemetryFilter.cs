@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.ApplicationInsights.Channel;
+﻿using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -18,11 +17,16 @@ namespace AppInsightDemo.AppInsights
         }
 
         public void Process(ITelemetry item)
-        { 
-            // Example: process all telemetry except fast requests
-            if (!(item is RequestTelemetry request) || 
-                request.Duration >= TimeSpan.FromMilliseconds(50))
-                _next.Process(item); // Call next processor
+        {
+            // Example: process all telemetry except requests where url contains "SkipThisOne"
+            var isRequestToUrlContainingSpecificText = item is RequestTelemetry request && request.Url.ToString().Contains("SkipThisOne");
+
+            if (!isRequestToUrlContainingSpecificText)
+                _next.Process(item); // Process the item
+            else
+            {
+                // Item is dropped here
+            }
         }
     }
 }

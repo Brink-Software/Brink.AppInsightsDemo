@@ -1,7 +1,6 @@
 ﻿using AppInsightDemo.AppInsights;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.SnapshotCollector;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +33,6 @@ namespace AppInsightDemo
             services.AddApplicationInsightsTelemetry();
             services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
-            services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
-            services.AddApplicationInsightsTelemetryProcessor<SnapshotCollectorTelemetryProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

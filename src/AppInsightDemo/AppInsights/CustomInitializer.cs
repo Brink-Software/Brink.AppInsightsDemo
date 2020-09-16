@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
+﻿using System.Reflection;
+using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ namespace AppInsightDemo.AppInsights
         
         protected override void OnInitializeTelemetry(HttpContext platformContext, RequestTelemetry requestTelemetry, ITelemetry telemetry)
         {
-            telemetry.Context.Device.Model = "Web Server";
+            telemetry.Context.Component.Version = Assembly.GetCallingAssembly().GetName().Version?.ToString();
 
             // To add custom properties the item has to implement ISupportProperties
             if (!(telemetry is ISupportProperties supportedTelemetry))
