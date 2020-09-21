@@ -24,12 +24,23 @@ namespace FunctionApp
         {
             // The current request telemetry item gets a property
             var requestTelemetry = req.HttpContext.Features.Get<RequestTelemetry>();
-            requestTelemetry.Properties.Add("aPropertyA", "setUsingFeature");
+            requestTelemetry.Properties.Add("setUsingFeature", "setUsingFeature");
 
             // The current telemetry item gets a property. Useful if the function is not triggered by an http request
-            Activity.Current.AddTag("aPropertyB", "setUsingTag");
+            Activity.Current.AddTag("setUsingTag", "setUsingTag");
 
+            // Subsequent telemetry gets this property attached
+            Activity.Current.AddBaggage("setUsingActivityBaggage", "setUsingActivityBaggage"); 
+            
             _telemetryClient.TrackEvent("HttpTriggered Function Executed");
+
+            using (_telemetryClient.StartOperation<DependencyTelemetry>("aSubOperationOfHttpTriggered"))
+            {
+                // This dependency telemetry will have only the properties set using Activity.Current.AddBaggage(..)
+
+                // This event telemetry will have only the properties set using Activity.Current.AddBaggage(..)
+                _telemetryClient.TrackEvent("anEventInSubOperationOfHttpTriggered");
+            }
 
             return new OkResult();
         }

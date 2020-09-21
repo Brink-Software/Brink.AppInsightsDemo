@@ -47,7 +47,10 @@ namespace AppInsightDemo.Controllers
         [HttpGet("/api/demo2")]
         public ActionResult<IEnumerable<string>> ActivityDemo()
         {
-            Activity.Current.AddBaggage("aProperty2", "setUsingActivityBaggage");   // Add aProperty3 to sub operations of the request telemetry item only
+            var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
+            requestTelemetry.Properties.Add("aProperty2", "setUsingFeature");
+
+            Activity.Current.AddBaggage("aProperty2", "setUsingActivityBaggage");   // Add aProperty2 to sub operations of the request telemetry item only
 
             _telemetryClient.TrackEvent("WithProperty2");
 

@@ -10,7 +10,6 @@ namespace FunctionApp
         {
             if (!(telemetry is ISupportProperties item)) return;
 
-            // Demonstrate use of dynamic properties using AsyncLocal
             // Demonstrate static property
             item.Properties["Environment"] = "Production";
         }
