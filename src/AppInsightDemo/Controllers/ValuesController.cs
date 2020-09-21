@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -79,6 +80,22 @@ namespace AppInsightDemo.Controllers
             {
                 _logger.LogWarning("Some Warning");
             }
+
+            return new[] { "value1", "value2" };
+        }
+
+        /// <summary>
+        /// Adds additional properties to a trace telemetry using log scopes
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/api/demo4")]
+        public ActionResult<IEnumerable<string>> TrackMetric()
+        {
+            _telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(1, "a", "1");
+            _telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(2, "a", "1");
+            _telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(3, "a", "1");
+            _telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(4, "a", "2");
+            _telemetryClient.GetMetric(new MetricIdentifier("Performance", "MyOtherMetric")).TrackValue(5);
 
             return new[] { "value1", "value2" };
         }
