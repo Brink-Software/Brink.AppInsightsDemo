@@ -9,7 +9,7 @@
     },
     "applicationInsights": {
       "samplingSettings": {
-        "excludedTypes": "Event"
+        "excludedTypes": "Event;Request;Exception"
       }
     }
   }
