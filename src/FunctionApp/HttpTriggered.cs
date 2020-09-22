@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace FunctionApp
 {
@@ -20,7 +21,7 @@ namespace FunctionApp
 
         [FunctionName("HttpTriggered")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
             // The current request telemetry item gets a property
             var requestTelemetry = req.HttpContext.Features.Get<RequestTelemetry>();
@@ -41,6 +42,8 @@ namespace FunctionApp
                 // This event telemetry will have only the properties set using Activity.Current.AddBaggage(..)
                 _telemetryClient.TrackEvent("anEventInSubOperationOfHttpTriggered");
             }
+
+            log.LogInformation("Finished Execution");
 
             return new OkResult();
         }

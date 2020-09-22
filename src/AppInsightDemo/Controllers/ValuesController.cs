@@ -12,7 +12,7 @@ namespace AppInsightDemo.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private readonly ILogger<ValuesController> _logger;
+        private readonly ILogger _logger;
         private readonly TelemetryClient _telemetryClient;
 
         public ValuesController(ILogger<ValuesController> logger, TelemetryClient telemetryClient)
@@ -78,7 +78,7 @@ namespace AppInsightDemo.Controllers
                 {"aProperty3", "setUsingScope"}
             }))
             {
-                _logger.LogWarning("Some Warning");
+                _logger.LogWarning("Some Warning and a {CustomProperty}", "CustomPropValue");
             }
 
             return new[] { "value1", "value2" };

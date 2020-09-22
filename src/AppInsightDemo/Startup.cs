@@ -30,7 +30,10 @@ namespace AppInsightDemo
             services.AddHttpContextAccessor();
 
             services.AddHttpClient();
-            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetry(options =>
+            {
+                options.EnablePerformanceCounterCollectionModule = false;
+            });
             services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
         }

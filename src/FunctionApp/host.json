@@ -5,7 +5,7 @@
       "Default": "Information",
       "Host.Results": "Information",
       "Host.Aggregator": "Information",
-      "Function.HttpTriggered.User": "Information"
+      "Function": "Information"
     },
     "applicationInsights": {
       "samplingSettings": {
