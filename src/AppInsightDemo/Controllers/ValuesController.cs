@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AppInsightDemo.Worker;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Metrics;
@@ -14,11 +17,13 @@ namespace AppInsightDemo.Controllers
     {
         private readonly ILogger _logger;
         private readonly TelemetryClient _telemetryClient;
+        private readonly IBackgroundTaskQueue _taskQueue;
 
-        public ValuesController(ILogger<ValuesController> logger, TelemetryClient telemetryClient)
+        public ValuesController(ILogger<ValuesController> logger, TelemetryClient telemetryClient, IBackgroundTaskQueue taskQueue)
         {
             _logger = logger;
             _telemetryClient = telemetryClient;
+            _taskQueue = taskQueue;
         }
 
         /// <summary>
@@ -98,6 +103,26 @@ namespace AppInsightDemo.Controllers
             _telemetryClient.GetMetric(new MetricIdentifier("Performance", "MyOtherMetric")).TrackValue(5);
 
             return new[] { "value1", "value2" };
+        }
+
+        [HttpGet("/api/demo5")]
+        public ActionResult TrackWorker()
+        {
+            var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
+
+            _taskQueue.QueueBackgroundWorkItem(async ct =>
+            {
+                using(var op = _telemetryClient.StartOperation<DependencyTelemetry>("QueuedWork", requestTelemetry.Context.Operation.Id))
+                {
+                    _ = await new HttpClient().GetStringAsync("http://blank.org");
+
+                    await Task.Delay(250);
+                    op.Telemetry.ResultCode = "200";
+                    op.Telemetry.Success = true;
+                }
+            });
+
+            return Accepted();
         }
     }
 }

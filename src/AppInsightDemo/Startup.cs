@@ -11,6 +11,7 @@ using System;
 using System.Threading;
 using AppInsightDemo.Middleware;
 using Microsoft.ApplicationInsights.DependencyCollector;
+using AppInsightDemo.Worker;
 
 namespace AppInsightDemo
 {
@@ -39,6 +40,9 @@ namespace AppInsightDemo
             services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
             services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, options) => 
                 module.EnableSqlCommandTextInstrumentation = true);
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
