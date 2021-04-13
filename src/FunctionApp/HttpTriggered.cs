@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -42,6 +43,9 @@ namespace FunctionApp
                 // This event telemetry will have only the properties set using Activity.Current.AddBaggage(..)
                 _telemetryClient.TrackEvent("anEventInSubOperationOfHttpTriggered");
             }
+
+            // Generate an entry in the exceptions table and an entry in the trace table of severity warning with message `Some Message`
+            log.LogWarning(new Exception("Demo"), "Some Message");
 
             log.LogInformation("Finished Execution");
 

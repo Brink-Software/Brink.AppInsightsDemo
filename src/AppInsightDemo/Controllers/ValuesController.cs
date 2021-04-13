@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -123,6 +124,16 @@ namespace AppInsightDemo.Controllers
             });
 
             return Accepted();
+        }
+
+        [HttpGet("/api/demo6")]
+        public ActionResult<IEnumerable<string>> TrackException()
+        {
+            var ex = new Exception("Woops");
+            
+            _logger.LogWarning(ex, "Error occured");
+
+            return new[] { "value1", "value2" };
         }
     }
 }
