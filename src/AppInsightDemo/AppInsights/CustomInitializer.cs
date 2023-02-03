@@ -1,8 +1,13 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
+using Microsoft.ApplicationInsights.DependencyCollector;
 
 namespace AppInsightDemo.AppInsights
 {
@@ -29,6 +34,16 @@ namespace AppInsightDemo.AppInsights
 
             supportedTelemetry.Properties["IsPrivilegedCall"] =
                 platformContext.User.IsInRole("Admin").ToString();
+
+            // Getting access to the request and the response of a dependency call
+            if (telemetry is DependencyTelemetry dependencyTelemetry 
+                && dependencyTelemetry.Type.Equals("http", StringComparison.InvariantCultureIgnoreCase)
+                && dependencyTelemetry.TryGetHttpResponseOperationDetail(out var response)
+                && dependencyTelemetry.TryGetHttpRequestOperationDetail(out var request))
+            {
+                
+            }
         }
+    }
     }
 }
