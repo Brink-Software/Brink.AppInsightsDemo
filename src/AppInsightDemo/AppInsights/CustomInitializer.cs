@@ -1,8 +1,5 @@
-﻿using System.IO;
-using System;
+﻿using System;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
