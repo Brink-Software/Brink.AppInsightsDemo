@@ -1,7 +1,4 @@
-﻿using AppInsightDemo.AppInsights;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 using AppInsightDemo.Middleware;
-using Microsoft.ApplicationInsights.DependencyCollector;
 using AppInsightDemo.Worker;
 
 namespace AppInsightDemo
@@ -32,30 +28,15 @@ namespace AppInsightDemo
             services.AddHttpContextAccessor();
 
             services.AddHttpClient();
-            services.AddApplicationInsightsTelemetry(options =>
-            {
-                options.EnablePerformanceCounterCollectionModule = false;
-            });
-            services.AddSingleton<ITelemetryInitializer, CustomInitializer>();
-            services.AddApplicationInsightsTelemetryProcessor<CustomTelemetryFilter>();
-            services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, options) => 
-                module.EnableSqlCommandTextInstrumentation = true);
-
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime, TelemetryClient telemetryClient)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime)
         {
-            hostApplicationLifetime.ApplicationStarted.Register(() => { telemetryClient.TrackEvent("App Started"); });
-            hostApplicationLifetime.ApplicationStopping.Register(() => { telemetryClient.TrackEvent("App Stopping"); });
-            hostApplicationLifetime.ApplicationStopped.Register(() => {
-                telemetryClient.TrackEvent("App Stopped");
-                telemetryClient.Flush();
-
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-            });
+            //hostApplicationLifetime.ApplicationStarted.Register(() => { telemetryClient.TrackEvent("App Started"); });
+            //hostApplicationLifetime.ApplicationStopping.Register(() => { telemetryClient.TrackEvent("App Stopping"); });
 
             if (env.IsDevelopment())
             {

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 
 namespace AppInsightDemo.Middleware
@@ -20,9 +19,9 @@ namespace AppInsightDemo.Middleware
         /// <param name="telemetryClient"></param>
         /// <returns></returns>
 
-        public async Task InvokeAsync(HttpContext context, TelemetryClient telemetryClient)
+        public async Task InvokeAsync(HttpContext context)
         {
-            telemetryClient.TrackTrace($"Middleware {nameof(CustomMiddleware)} invoked");
+            //telemetryClient.TrackTrace($"Middleware {nameof(CustomMiddleware)} invoked");
 
             await _next(context);
         }

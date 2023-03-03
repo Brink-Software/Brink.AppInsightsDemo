@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -15,9 +14,7 @@ namespace WorkerService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton<ITelemetryInitializer, TelemetryEnrichment>();
                     services.AddHostedService<Worker>();
-                    services.AddApplicationInsightsTelemetryWorkerService();
                 });
     }
 }

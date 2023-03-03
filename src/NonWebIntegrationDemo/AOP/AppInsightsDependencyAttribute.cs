@@ -5,16 +5,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using ArxOne.MrAdvice.Advice;
 using ArxOne.MrAdvice.Utility;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 
 namespace NonWebIntegrationDemo.AOP
 {
     public sealed class AppInsightsDependencyAttribute : Attribute, IMethodAsyncAdvice
     {
-        private static readonly TelemetryClient TelemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
-
         public string Type { get; set; } = "Other";
 
         public async Task Advise(MethodAsyncAdviceContext context)
@@ -24,7 +19,7 @@ namespace NonWebIntegrationDemo.AOP
                 parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
             var signature = $"{context.Target ?? context.TargetType}.{context.TargetName}({parameterDescription})";
 
-            using (var operation = TelemetryClient.StartOperation<DependencyTelemetry>(signature))
+            //using (var operation = TelemetryClient.StartOperation<DependencyTelemetry>(signature))
             {
                 try
                 {
@@ -32,26 +27,14 @@ namespace NonWebIntegrationDemo.AOP
                 }
                 catch (Exception)
                 {
-                    operation.Telemetry.Success = false;
+                    //operation.Telemetry.Success = false;
                     throw;
                 }
                 finally
                 {
-                    operation.Telemetry.Type = Type;
-                    EnrichRequestTelemetry(operation.Telemetry, context, parameters);
+                    //operation.Telemetry.Type = Type;
+                    //EnrichRequestTelemetry(operation.Telemetry, context, parameters);
                 }
-            }
-        }
-
-        private static void EnrichRequestTelemetry(ISupportProperties telemetry, MethodAsyncAdviceContext context, IReadOnlyList<ParameterInfo> parameters)
-        {
-            telemetry.Properties.Add(
-                new KeyValuePair<string, string>("Accessibility",
-                    context.TargetMethod.Attributes.ToVisibilityScope().ToString()));
-
-            for (var i = 0; i < context.Arguments.Count; i++)
-            {
-                telemetry.Properties.Add($"ARG {parameters[i].Name}", context.Arguments[i].ToString());
             }
         }
     }
