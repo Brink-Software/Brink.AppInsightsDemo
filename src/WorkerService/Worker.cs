@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,9 @@ namespace WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //_telemetryClient.TrackEvent("Execution started.");
+            var MyActivitySource = new ActivitySource(OpenTelemetryProvider.ServiceName);
+            using var activity = MyActivitySource.StartActivity("BackgroundService");
+            activity.AddEvent(new ActivityEvent("Execution started."));
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -25,7 +28,7 @@ namespace WorkerService
                 await Task.Delay(1000, stoppingToken);
             }
 
-            //_telemetryClient.TrackEvent("Execution halted.");
+            activity.AddEvent(new ActivityEvent("Execution started."));
         }
     }
 }
