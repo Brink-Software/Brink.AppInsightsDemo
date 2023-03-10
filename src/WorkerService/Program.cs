@@ -41,7 +41,7 @@ namespace WorkerService
                             .AddSource(OpenTelemetryProvider.ServiceName, "1.2.3")
                             .ConfigureResource(OpenTelemetryProvider.ConfigureResourceBuilder)
                             .AddConsoleExporter()
-                            .AddJaegerExporter()
+                            .AddOtlpExporter()
                             .AddAzureMonitorTraceExporter(options => { options.ConnectionString = "InstrumentationKey=3ba43954-2b8e-4588-bdc4-ea371255bb27;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"; })
                             .AddProcessor<TraceEnrichment>();
                         });
@@ -58,7 +58,7 @@ namespace WorkerService
         {
             get
             {
-                return rb => rb.AddService(ServiceName, serviceNamespace: "AppInsightDemo", serviceInstanceId: Environment.MachineName);
+                return rb => rb.AddService(ServiceName, serviceNamespace: "OpenTelemetryDemo", serviceInstanceId: Environment.MachineName);
             }
         }
     }

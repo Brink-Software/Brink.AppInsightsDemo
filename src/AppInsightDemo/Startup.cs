@@ -8,6 +8,9 @@ using AppInsightDemo.Middleware;
 using AppInsightDemo.Worker;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using System.Diagnostics.Metrics;
 
 namespace AppInsightDemo
 {
@@ -23,18 +26,37 @@ namespace AppInsightDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOpenTelemetry().WithTracing(builder =>
+            var meter = new Meter(OpenTelemetryProvider.ServiceName);
+            var customMetric = meter.CreateUpDownCounter<int>("MyCustomMetric", "feet", "Some description");
+
+            services.AddSingleton(customMetric);
+
+            services.AddOpenTelemetry()
+                .WithTracing(builder =>
+                    {
+                        builder
+                            .AddSource(OpenTelemetryProvider.ServiceName, "1.2.3")
+                            .ConfigureResource(OpenTelemetryProvider.ConfigureResourceBuilder)
+                            .AddHttpClientInstrumentation()
+                            .AddAspNetCoreInstrumentation()
+                            .AddConsoleExporter()
+                            .AddOtlpExporter()
+                            .AddAzureMonitorTraceExporter(options => { options.ConnectionString = "InstrumentationKey=3ba43954-2b8e-4588-bdc4-ea371255bb27;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"; })
+                            .AddProcessor<TraceEnrichment>();
+                    })
+                .WithMetrics(builder =>
                 {
                     builder
-                    .AddSource(OpenTelemetryProvider.ServiceName, "1.2.3")
-                    .ConfigureResource(builder =>
-                    {
-                        OpenTelemetryProvider.CreateResourceBuilder();
-                    })
-                    .AddHttpClientInstrumentation()
-                    .AddAspNetCoreInstrumentation()
-                    .AddConsoleExporter();
+                        .AddMeter(meter.Name)
+                        .AddConsoleExporter()
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter()
+                        .AddConsoleExporter()
+                        .AddAzureMonitorMetricExporter(options => { options.ConnectionString = "InstrumentationKey=3ba43954-2b8e-4588-bdc4-ea371255bb27;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"; })
+                        .ConfigureResource(OpenTelemetryProvider.ConfigureResourceBuilder);
                 });
+            services.AddSingleton(TracerProvider.Default.GetTracer(OpenTelemetryProvider.ServiceName));
 
             services.AddMvc(o => o.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 

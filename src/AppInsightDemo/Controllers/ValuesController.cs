@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AppInsightDemo.Worker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
 
 namespace AppInsightDemo.Controllers
 {
@@ -15,51 +18,51 @@ namespace AppInsightDemo.Controllers
     {
         private readonly ILogger _logger;
         private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly Tracer _tracer;
+        private readonly UpDownCounter<int> _meter;
 
-        public ValuesController(ILogger<ValuesController> logger, IBackgroundTaskQueue taskQueue)
+        public ValuesController(ILogger<ValuesController> logger, IBackgroundTaskQueue taskQueue, Tracer tracer, UpDownCounter<int> meter)
         {
             _logger = logger;
             _taskQueue = taskQueue;
+            _tracer = tracer;
+            _meter = meter;
         }
 
         /// <summary>
-        /// Adds additional properties to a Request Telemetry using HttpContext.Features 
+        /// 
         /// </summary>
         /// <returns></returns>
         [HttpGet("/api/demo1")]
-        public ActionResult<IEnumerable<string>> HttpContextFeaturesDemo()
+        public async Task<ActionResult<IEnumerable<string>>> HttpContextFeaturesDemo()
         {
-            //var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
-            //requestTelemetry.Properties.Add();
-            Activity.Current.AddTag("aProperty1", "setUsingActivity");
+            Tracer.CurrentSpan.SetAttribute("aProperty1", "setUsingActivity");
 
-            //_telemetryClient.TrackEvent("NoProperty1");
-            Activity.Current.AddEvent(new ActivityEvent("NoProperty1"));
+            Tracer.CurrentSpan.AddEvent("NoProperty1");
+            
+            using var span = _tracer.StartActiveSpan("aSubOperationOfHttpContextFeaturesDemo");
+            
+            await Task.Delay(TimeSpan.FromMilliseconds(30));
 
             return new[] { "value1", "value2" };
         }
 
         /// <summary>
-        /// Adds additional properties to a telemetry of same operation using Activity
+        /// Adds additional properties to a telemetry of same operation using OTEL
         /// </summary>
         /// <returns></returns>
         [HttpGet("/api/demo2")]
         public ActionResult<IEnumerable<string>> ActivityDemo()
         {
-            //var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
-            //requestTelemetry.Properties.Add("aProperty2", "setUsingFeature");
+            Activity.Current.AddTag("aProperty2", "setUsingFeature");
+            Baggage.SetBaggage("aProperty2", "setUsingActivityBaggage");   // Add aProperty2 to sub operations of the request telemetry item only
 
-            Activity.Current.AddBaggage("aProperty2", "setUsingActivityBaggage");   // Add aProperty2 to sub operations of the request telemetry item only
+            Activity.Current.AddEvent(new ActivityEvent("WithProperty2"));
 
-            //_telemetryClient.TrackEvent("WithProperty2");
+            var MyActivitySource = new ActivitySource(OpenTelemetryProvider.ServiceName);
+            using var activity = MyActivitySource.StartActivity("aSubOperationOfActivityDemo");
 
-            //using (_telemetryClient.StartOperation<DependencyTelemetry>("aSubOperationOfActivityDemo"))
-            {
-                // This dependency telemetry will have only the properties set using Activity.Current.AddBaggage(..)
-
-                // This event telemetry will have only the properties set using Activity.Current.AddBaggage(..)
-                //_telemetryClient.TrackEvent("WithProperty2InsideSubOp");
-            }
+            activity.AddEvent(new ActivityEvent("WithProperty2InsideSubOp"));
 
             return new[] { "value1", "value2" };
         }
@@ -89,11 +92,10 @@ namespace AppInsightDemo.Controllers
         [HttpGet("/api/demo4")]
         public ActionResult<IEnumerable<string>> TrackMetric()
         {
-            //_telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(1, "a", "1");
-            //_telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(2, "a", "1");
-            //_telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(3, "a", "1");
-            //_telemetryClient.GetMetric("MyCustomMetric", "Company", "User").TrackValue(4, "a", "2");
-            //_telemetryClient.GetMetric(new MetricIdentifier("Performance", "MyOtherMetric")).TrackValue(5);
+            _meter.Add(1, new KeyValuePair<string, object>("Company", "A"), new KeyValuePair<string, object>("User", "1"));
+            _meter.Add(1, new KeyValuePair<string, object>("Company", "A"), new KeyValuePair<string, object>("User", "2"));
+            _meter.Add(1, new KeyValuePair<string, object>("Company", "A"), new KeyValuePair<string, object>("User", "1"));
+            _meter.Add(1, new KeyValuePair<string, object>("Company", "B"), new KeyValuePair<string, object>("User", "1"));
 
             return new[] { "value1", "value2" };
         }
@@ -101,18 +103,18 @@ namespace AppInsightDemo.Controllers
         [HttpGet("/api/demo5")]
         public ActionResult TrackWorker()
         {
-            //var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
+            var context = Activity.Current.Context;
 
             _taskQueue.QueueBackgroundWorkItem(async ct =>
             {
-                //using(var op = _telemetryClient.StartOperation<DependencyTelemetry>("QueuedWork", requestTelemetry.Context.Operation.Id))
-                {
-                    _ = await new HttpClient().GetStringAsync("http://blank.org");
+                var MyActivitySource = new ActivitySource(OpenTelemetryProvider.ServiceName);
+                using var activity = MyActivitySource.StartActivity("QueuedWork", ActivityKind.Internal, context);
 
-                    await Task.Delay(250);
-                    //op.Telemetry.ResultCode = "200";
-                    //op.Telemetry.Success = true;
-                }
+                _ = await new HttpClient().GetStringAsync("http://blank.org");
+
+                await Task.Delay(250);
+
+                activity.SetStatus(ActivityStatusCode.Ok, "200");
             });
 
             return Accepted();
@@ -122,8 +124,10 @@ namespace AppInsightDemo.Controllers
         public ActionResult<IEnumerable<string>> TrackException()
         {
             var ex = new Exception("Woops");
-            
+
             _logger.LogWarning(ex, "Error occured");
+
+            Activity.Current.RecordException(ex);
 
             return new[] { "value1", "value2" };
         }
