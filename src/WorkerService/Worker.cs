@@ -28,7 +28,7 @@ namespace WorkerService
                 await Task.Delay(1000, stoppingToken);
             }
 
-            activity.AddEvent(new ActivityEvent("Execution started."));
+            activity.AddEvent(new ActivityEvent("Execution stopped."));
         }
     }
 }

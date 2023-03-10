@@ -30,9 +30,11 @@ namespace AppInsightDemo.Controllers
         public ActionResult<IEnumerable<string>> HttpContextFeaturesDemo()
         {
             //var requestTelemetry = HttpContext.Features.Get<RequestTelemetry>();
-            //requestTelemetry.Properties.Add("aProperty1", "setUsingFeature");
+            //requestTelemetry.Properties.Add();
+            Activity.Current.AddTag("aProperty1", "setUsingActivity");
 
             //_telemetryClient.TrackEvent("NoProperty1");
+            Activity.Current.AddEvent(new ActivityEvent("NoProperty1"));
 
             return new[] { "value1", "value2" };
         }

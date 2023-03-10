@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
 using AppInsightDemo.Middleware;
 using AppInsightDemo.Worker;
+using OpenTelemetry.Trace;
+using System.Diagnostics;
 
 namespace AppInsightDemo
 {
@@ -23,6 +23,19 @@ namespace AppInsightDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOpenTelemetry().WithTracing(builder =>
+                {
+                    builder
+                    .AddSource(OpenTelemetryProvider.ServiceName, "1.2.3")
+                    .ConfigureResource(builder =>
+                    {
+                        OpenTelemetryProvider.CreateResourceBuilder();
+                    })
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddConsoleExporter();
+                });
+
             services.AddMvc(o => o.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddHttpContextAccessor();
@@ -35,8 +48,11 @@ namespace AppInsightDemo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime)
         {
-            //hostApplicationLifetime.ApplicationStarted.Register(() => { telemetryClient.TrackEvent("App Started"); });
-            //hostApplicationLifetime.ApplicationStopping.Register(() => { telemetryClient.TrackEvent("App Stopping"); });
+            var lifeTimeActivity = new ActivitySource(OpenTelemetryProvider.ServiceName).StartActivity("AppLifetime");
+
+            hostApplicationLifetime.ApplicationStarted.Register(() => { lifeTimeActivity?.AddEvent(new ActivityEvent("App Started")); });
+            hostApplicationLifetime.ApplicationStopping.Register(() => { 
+                lifeTimeActivity?.AddEvent(new ActivityEvent("App Stopping")); });
 
             if (env.IsDevelopment())
             {

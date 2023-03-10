@@ -1,27 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace AppInsightDemo.Middleware
 {
     public class CustomMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger _logger;
 
-        public CustomMiddleware(RequestDelegate next)
+        public CustomMiddleware(RequestDelegate next, ILogger<CustomMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
-
-        /// <summary>
-        /// Demonstrate how TelemetryClient is injected using DI 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="telemetryClient"></param>
-        /// <returns></returns>
 
         public async Task InvokeAsync(HttpContext context)
         {
-            //telemetryClient.TrackTrace($"Middleware {nameof(CustomMiddleware)} invoked");
+            _logger.LogInformation($"Middleware {nameof(CustomMiddleware)} invoked");
 
             await _next(context);
         }

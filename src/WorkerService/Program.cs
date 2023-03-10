@@ -1,3 +1,4 @@
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,9 +23,13 @@ namespace WorkerService
                     builder.ClearProviders();
                     builder.AddOpenTelemetry(options =>
                     {
+                        var resourceBuilder = ResourceBuilder.CreateDefault();
+                        OpenTelemetryProvider.ConfigureResourceBuilder(resourceBuilder);
+
                         options.IncludeFormattedMessage = true;
-                        options.SetResourceBuilder(OpenTelemetryProvider.CreateResourceBuilder());
+                        options.SetResourceBuilder(resourceBuilder);
                         options.AddConsoleExporter();
+                        options.AddAzureMonitorLogExporter(options => { options.ConnectionString = "InstrumentationKey=3ba43954-2b8e-4588-bdc4-ea371255bb27;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"; });
                     });
                 })
                 .ConfigureServices((hostContext, services) =>
@@ -34,11 +39,10 @@ namespace WorkerService
                         {
                             builder
                             .AddSource(OpenTelemetryProvider.ServiceName, "1.2.3")
-                            .ConfigureResource(builder =>
-                            {
-                                OpenTelemetryProvider.CreateResourceBuilder();
-                            })
+                            .ConfigureResource(OpenTelemetryProvider.ConfigureResourceBuilder)
                             .AddConsoleExporter()
+                            .AddJaegerExporter()
+                            .AddAzureMonitorTraceExporter(options => { options.ConnectionString = "InstrumentationKey=3ba43954-2b8e-4588-bdc4-ea371255bb27;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"; })
                             .AddProcessor<TraceEnrichment>();
                         });
                         
@@ -49,11 +53,13 @@ namespace WorkerService
     public class OpenTelemetryProvider
     {
         public static string ServiceName => "ServiceWorker";
-
-        public static ResourceBuilder CreateResourceBuilder()
+        
+        public static Action<ResourceBuilder> ConfigureResourceBuilder
         {
-            return ResourceBuilder.CreateDefault()
-                                    .AddService(ServiceName, serviceNamespace: "AppInsightDemo", serviceInstanceId: Environment.MachineName);
+            get
+            {
+                return rb => rb.AddService(ServiceName, serviceNamespace: "AppInsightDemo", serviceInstanceId: Environment.MachineName);
+            }
         }
     }
 }
