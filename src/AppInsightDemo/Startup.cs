@@ -11,6 +11,8 @@ using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using System.Diagnostics.Metrics;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace AppInsightDemo
 {
@@ -48,7 +50,6 @@ namespace AppInsightDemo
                 {
                     builder
                         .AddMeter(meter.Name)
-                        .AddConsoleExporter()
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation()
                         .AddOtlpExporter()
@@ -68,13 +69,20 @@ namespace AppInsightDemo
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime, Tracer tracer, ILogger<Startup> logger)
         {
-            var lifeTimeActivity = new ActivitySource(OpenTelemetryProvider.ServiceName).StartActivity("AppLifetime");
+            var lifeTimeSpan = tracer.StartRootSpan("AppLifetime");
 
-            hostApplicationLifetime.ApplicationStarted.Register(() => { lifeTimeActivity?.AddEvent(new ActivityEvent("App Started")); });
-            hostApplicationLifetime.ApplicationStopping.Register(() => { 
-                lifeTimeActivity?.AddEvent(new ActivityEvent("App Stopping")); });
+            hostApplicationLifetime.ApplicationStarted.Register(() => {
+                lifeTimeSpan?.AddEvent("App Started");
+                logger.LogInformation("App Started");
+            });
+            hostApplicationLifetime.ApplicationStopping.Register(async () => {
+                lifeTimeSpan?.AddEvent("App Stopping");
+                logger.LogInformation("App Stopping");
+                lifeTimeSpan.Dispose();
+                await Task.Delay(1000);
+            });
 
             if (env.IsDevelopment())
             {
