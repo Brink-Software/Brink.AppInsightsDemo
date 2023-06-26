@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using AppInsightDemo.Middleware;
 using AppInsightDemo.Worker;
 using OpenTelemetry.Trace;
-using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using System.Diagnostics.Metrics;

@@ -36,11 +36,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Azure.Core, Version=1.29.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Core.1.29.0\lib\net461\Azure.Core.dll</HintPath>
+    <Reference Include="Azure.Core, Version=1.32.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Core.1.32.0\lib\net461\Azure.Core.dll</HintPath>
     </Reference>
     <Reference Include="Azure.Monitor.OpenTelemetry.Exporter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Monitor.OpenTelemetry.Exporter.1.0.0-beta.8\lib\netstandard2.0\Azure.Monitor.OpenTelemetry.Exporter.dll</HintPath>
+      <HintPath>..\packages\Azure.Monitor.OpenTelemetry.Exporter.1.0.0-beta.12\lib\netstandard2.0\Azure.Monitor.OpenTelemetry.Exporter.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.19.4.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.19.4\lib\net45\Google.Protobuf.dll</HintPath>
@@ -97,31 +97,37 @@
       <HintPath>..\packages\MrAdvice.2.8.11\lib\net40-client\MrAdvice.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.1.4.0\lib\net462\OpenTelemetry.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.1.5.0\lib\net462\OpenTelemetry.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Api.1.4.0\lib\net462\OpenTelemetry.Api.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Api.1.5.0\lib\net462\OpenTelemetry.Api.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Api.ProviderBuilderExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Api.ProviderBuilderExtensions.1.4.0\lib\net462\OpenTelemetry.Api.ProviderBuilderExtensions.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Api.ProviderBuilderExtensions.1.5.0\lib\net462\OpenTelemetry.Api.ProviderBuilderExtensions.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Exporter.Console, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Exporter.Console.1.4.0\lib\net462\OpenTelemetry.Exporter.Console.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Exporter.Console.1.5.0\lib\net462\OpenTelemetry.Exporter.Console.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Exporter.OpenTelemetryProtocol.1.4.0\lib\net462\OpenTelemetry.Exporter.OpenTelemetryProtocol.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Exporter.OpenTelemetryProtocol.1.5.0\lib\net462\OpenTelemetry.Exporter.OpenTelemetryProtocol.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Exporter.Zipkin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Exporter.Zipkin.1.4.0\lib\net462\OpenTelemetry.Exporter.Zipkin.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Exporter.Zipkin.1.5.0\lib\net462\OpenTelemetry.Exporter.Zipkin.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Extensions.Hosting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTelemetry.Extensions.Hosting.1.4.0\lib\netstandard2.0\OpenTelemetry.Extensions.Hosting.dll</HintPath>
+      <HintPath>..\packages\OpenTelemetry.Extensions.Hosting.1.5.0\lib\netstandard2.0\OpenTelemetry.Extensions.Hosting.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Extensions.PersistentStorage, Version=1.0.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTelemetry.Extensions.PersistentStorage.1.0.0-beta.1\lib\net462\OpenTelemetry.Extensions.PersistentStorage.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Extensions.PersistentStorage.Abstractions, Version=1.0.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTelemetry.Extensions.PersistentStorage.Abstractions.1.0.0-beta.1\lib\net462\OpenTelemetry.Extensions.PersistentStorage.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTelemetry.PersistentStorage.Abstractions, Version=1.0.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTelemetry.PersistentStorage.Abstractions.1.0.0-beta.2\lib\net462\OpenTelemetry.PersistentStorage.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTelemetry.PersistentStorage.FileSystem, Version=1.0.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTelemetry.PersistentStorage.FileSystem.1.0.0-beta.2\lib\net462\OpenTelemetry.PersistentStorage.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
